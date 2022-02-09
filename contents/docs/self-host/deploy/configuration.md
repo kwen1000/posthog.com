@@ -22,6 +22,9 @@ There is optional support for the following additional dependencies:
 - [kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx/)
 - [jetstack/cert-manager](https://github.com/jetstack/cert-manager)
 - [prometheus-community/prometheus](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus)
+- [prometheus-community/prometheus-kafka-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-kafka-exporter)
+- [prometheus-community/prometheus-postgres-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-postgres-exporter)
+- [prometheus-community/prometheus-redis-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-redis-exporter)
 - [prometheus-community/prometheus-statsd-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-statsd-exporter)
 
 
@@ -208,6 +211,19 @@ To use an external PostgreSQL service, please set `postgresql.enabled` to `false
 
 _See [ALL_VALUES.md](https://github.com/PostHog/charts-clickhouse/blob/main/charts/posthog/ALL_VALUES.md) and [PostgreSQL chart](https://github.com/bitnami/charts/tree/master/bitnami/postgresql) for full configuration options._
 
+### [PgBouncer](https://www.pgbouncer.org/)
+PgBouncer is a lightweight connection pooler for PostgreSQL and it is installed by default as part of the chart. It is currently required in order for the installation to work (see [here](https://github.com/PostHog/charts-clickhouse/issues/280) for more info).
+
+If you've configured your PostgreSQL instance to require the use of TLS, you'll need to pass an additional env variables to the PgBouncer deployment (see the [official documentation](https://www.pgbouncer.org/config.html) for more info). Example:
+
+```yaml
+pgbouncer:
+  env:
+  - name: SERVER_TLS_SSLMODE
+    value: "your_value"
+```
+
+_See [ALL_VALUES.md](https://github.com/PostHog/charts-clickhouse/blob/main/charts/posthog/ALL_VALUES.md) for full configuration options._
 
 ### [Redis](https://redis.io/)
 
@@ -314,3 +330,30 @@ This might be useful when checking out metrics. Figure out your `prometheus-serv
 `kubectl --namespace NS port-forward posthog-prometheus-server-XXX 9090`.
 
 After this, you should be able to access Prometheus server on `localhost`.
+
+
+### [Statsd](https://github.com/statsd/statsd) / [`prometheus-statsd-exporter`](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-statsd-exporter)
+By default, StatsD is not installed as part of the chart. If you want to enable it, please set `prometheus-statsd-exporter.enabled` to `true`.
+
+#### Use an external service
+To use an external StatsD service, please set `prometheus-statsd-exporter.enabled` to `false` and then configure the `externalStatsd` values.
+
+_See [ALL_VALUES.md](https://github.com/PostHog/charts-clickhouse/blob/main/charts/posthog/ALL_VALUES.md) and [prometheus-statsd-exporter chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-statsd-exporter) for full configuration options._
+
+
+### [prometheus-kafka-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-kafka-exporter)
+By default, `prometheus-kafka-exporter` is not installed as part of the chart. If you want to enable it, please set `prometheus-kafka-exporter.enabled` to `true`. If you are using an external Kafka, please configure `prometheus-kafka-exporter.kafkaServer` accordingly.
+
+_See [ALL_VALUES.md](https://github.com/PostHog/charts-clickhouse/blob/main/charts/posthog/ALL_VALUES.md) and [prometheus-kafka-exporter chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-kafka-exporter) for full configuration options._
+
+
+### [prometheus-postgres-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-postgres-exporter)
+By default, `prometheus-postgres-exporter` is not installed as part of the chart. If you want to enable it, please set `prometheus-postgres-exporter.enabled` to `true`. If you are using an external Kafka, please configure `prometheus-postgres-exporter.config.datasource` accordingly.
+
+_See [ALL_VALUES.md](https://github.com/PostHog/charts-clickhouse/blob/main/charts/posthog/ALL_VALUES.md) and [prometheus-postgres-exporter chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-postgres-exporter) for full configuration options._
+
+
+### [prometheus-redis-exporter](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-redis-exporter)
+By default, `prometheus-redis-exporter` is not installed as part of the chart. If you want to enable it, please set `prometheus-redis-exporter.enabled` to `true`. If you are using an external Redis, please configure `prometheus-redis-exporter.redisAddress` accordingly.
+
+_See [ALL_VALUES.md](https://github.com/PostHog/charts-clickhouse/blob/main/charts/posthog/ALL_VALUES.md) and [prometheus-redis-exporter chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-redis-exporter) for full configuration options._
